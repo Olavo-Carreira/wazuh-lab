@@ -71,6 +71,15 @@
     <description>CorpNet Portal: login failed for user $(dstuser)</description>
   </rule>
 
+  <rule id="100203" level="10" frequency="5" timeframe="60">
+    <if_matched_sid>100165</if_matched_sid>
+    <description>CorpNet Portal: brute force - multiple login failures</description>
+    <mitre>
+      <id>T1110</id>
+    </mitre>
+    <group>attack,authentication,</group>
+  </rule>
+
   <rule id="100166" level="5">
     <decoded_as>corpnet-login</decoded_as>
     <match>result=success</match>
@@ -115,16 +124,41 @@
     <description>Suppress baseline noise</description>
   </rule>
 
-  <rule id="100131" level="15" frequency="2" timeframe="120">
+  <rule id="100131" level="15" timeframe="120">
     <if_matched_sid>100130</if_matched_sid>
-    <same_source_ip />
-    <description>CRITICAL: Log4Shell RCE confirmed - repeated JNDI injection within 2 min</description>
+    <if_sid>100150</if_sid>
+    <description>CRITICAL: Log4Shell RCE confirmed - JNDI injection followed by /etc/passwd modification</description>
     <mitre>
       <id>T1190</id>
       <id>T1068</id>
       <id>T1136</id>
     </mitre>
     <group>attack,exploit,privilege_escalation,critical,</group>
+  </rule>
+
+<!-- Lab 1 -->
+
+  <rule id="100199" level="7">
+    <if_sid>31101</if_sid>
+    <url>/lab1-demo</url>
+    <description>lab1 demo: someone hit /lab1-demo</description>
+  </rule>
+
+  <rule id="100200" level="10">
+    <if_sid>31100</if_sid>
+    <url>etc/passwd|etc/shadow</url>
+    <description>Possible Local File Inclusion attempt</description>
+  </rule>
+
+  <rule id="100201" level="10" frequency="8" timeframe="30">
+    <if_matched_sid>31101</if_matched_sid>
+    <description>Web Reconnaissance: Multiple 404 errors from same IP</description>
+  </rule>
+
+  <rule id="100202" level="0">
+    <if_sid>31101</if_sid>
+    <url>^/status$</url>
+    <description>Suppress 404 for /status health-check path</description>
   </rule>
 
 </group>
